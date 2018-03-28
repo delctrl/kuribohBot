@@ -1,7 +1,11 @@
+
+const dotenv = require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
 const request = require('request')
 
-const token = '';
+console.log("TOKEN: " + process.env.TELEGRAM_TOKEN);
+
+const token = process.env.TELEGRAM_TOKEN;
 
 const bot = new TelegramBot(token, {polling: true});
 
@@ -10,7 +14,7 @@ bot.on('message', (msg) => {
 
 	const pot = "pot of greed";
 	const what = "what"
-	const ask = "do?"
+	const ask = "do"
 	if (message.includes(pot)) {
 		if (message.includes(what) && message.includes(ask)) {
 
@@ -22,15 +26,16 @@ bot.on('message', (msg) => {
 	}
 
 	const doro = "doro";
+	const draw = "draw";
 	const monsutaC = "monsuta cado"
 	const monsutaK = "monsuta kado"
-	if (message.includes(doro) && !message.includes(monsutaC) && !message.includes(monsutaK)) {
+	if ((message.includes(doro) || message.includes(draw)) && !message.includes(monsutaC) && !message.includes(monsutaK)) {
 		bot.sendMessage(msg.chat.id, "MONSUTA KADO!",  {
 			"reply_to_message_id":msg.message_id
 		});
 		return;
 	}else if (message.includes(doro) && (message.includes(monsutaC) || message.includes(monsutaK))) {
-		bot.sendMessage(msg.chat.id, "YAMETE, YUGI!",  {
+		bot.sendMessage(msg.chat.id, "MO YAMETE! YUGI!",  {
 			"reply_to_message_id":msg.message_id
 		});
 		return;
