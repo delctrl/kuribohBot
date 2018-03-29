@@ -1,0 +1,19 @@
+{
+  "name": "kuribohbot",
+  "version": "1.0.0",
+  "description": "A Telegram Bot to perform YGO related tasks",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/delctrl/kuribohBot.git"
+  },
+  "author": "Rodrigo P. Assunção [DelCtrl]",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/delctrl/kuribohBot/issues"
+  },
+  "homepage": "https://github.com/delctrl/kuribohBot#readme"
+}
