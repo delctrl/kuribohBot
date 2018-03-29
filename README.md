@@ -10,7 +10,7 @@ These instructions will get you a copy of the bot up and running.
 
 Download and install [node js](https://nodejs.org/).
 
-You will also need to obtain a Telegram Bot Token. Follow the instructions found on the first step of [this tutorial] (https://github.com/hosein2398/node-telegram-bot-api-tutorial).
+You will also need to obtain a Telegram Bot Token. Follow the instructions found on the first step of [this tutorial](https://github.com/hosein2398/node-telegram-bot-api-tutorial).
 
 ### Installing
 
@@ -32,7 +32,7 @@ cat > .env
 TELEGRAM_TOKEN={YOUR_TOKEN}
 ```
 
-And that's it. You can now start the bot by running node:
+And that's it! You can now start the bot by running _index.js_ with node:
 
 ```
 node index.js
@@ -58,4 +58,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 * Thank's to [hosein2398](https://github.com/hosein2398/) for it's [Telegram Bot with Node Tutorial](https://github.com/hosein2398/node-telegram-bot-api-tutorial)
 * Conner Panarella from YGO Hub for creating and maintaining the API from which this bot builds upon
-* Yu-gi-oh! Trading Card Game is TM and copyright Konami Holdings Corporation.
+* Yu-Gi-Oh! Trading Card Game is TM and copyright Konami Holdings Corporation.
