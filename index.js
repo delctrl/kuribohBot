@@ -262,8 +262,8 @@ bot.onText(/\/effect (.+)/, (msg, match) => {
 		text = "Name: " +  card.name + "\n";
 
 		if (card.has_materials) {
-				text += "\nMaterials: " + card.materials + "\n";
-			}
+			text += "\nMaterials: " + card.materials + "\n";
+		}
 
 		if (card.is_pendulum) {
 			text += "\nPendulum Effect: " + card.pendulum_text + "\n";
@@ -272,6 +272,47 @@ bot.onText(/\/effect (.+)/, (msg, match) => {
 		text += "\nText: " + card.text + "\n";
 
 		bot.sendMessage(chatId, text, {
+			"reply_to_message_id":msg.message_id
+		});
+
+	});
+
+});
+
+bot.onText(/\/search (.+)/, (msg, match) => {
+
+	const chatId = msg.chat.id;
+
+	const searchTerm = match[1].toString().toLowerCase();
+
+	console.log(searchTerm);
+
+	request('https://www.ygohub.com/api/all_cards',  {json: true }, (err, res, body) => {
+
+		if (err) { return console.log(err); }
+		if (body.status.includes("error")) {
+			return bot.sendMessage(chatId, body.error_msg, {
+				"reply_to_message_id":msg.message_id
+			});
+		}
+
+		const cards = body.cards;
+		var result = "Search results (Max 10)\n\n";
+		var n_results = 0;
+
+		for (var i = 0; i < cards.length; i++) {
+
+			if (n_results > 10) { break; }
+
+			if (cards[i].toString().toLowerCase().includes(searchTerm)) {
+				result += cards[i].toString() + "\n";
+				n_results++;
+			}
+		}
+
+		if (n_results == 0) { result = "No result found."; }
+		
+		bot.sendMessage(chatId, result, {
 			"reply_to_message_id":msg.message_id
 		});
 
