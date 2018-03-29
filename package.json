@@ -11,9 +11,14 @@
     "url": "git+https://github.com/delctrl/kuribohBot.git"
   },
   "author": "Rodrigo P. Assunção [DelCtrl]",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/delctrl/kuribohBot/issues"
   },
-  "homepage": "https://github.com/delctrl/kuribohBot#readme"
+  "homepage": "https://github.com/delctrl/kuribohBot#readme",
+  "dependencies": {
+    "dotenv": "^5.0.1",
+    "node-telegram-bot-api": "^0.30.0",
+    "request": "^2.85.0"
+  }
 }

@@ -193,7 +193,7 @@ bot.onText(/\/stats (.+)/, (msg, match) => {
 			else {
 				info += "Level: " + card.stars + "\n";
 			}
-			
+
 			info += "Attribute: " + card.attribute + "\n";
 			info += "Type: " + card.species + "\n";
 			info += "Attack: " + card.attack + "\n";
@@ -220,7 +220,7 @@ bot.onText(/\/stats (.+)/, (msg, match) => {
 			info += "\nSubtypes:\n";
 
 			const monsterTypes = card.monster_types;
-		
+
 			for (var i = monsterTypes.length - 1; i >= 0; i--) {
 				info += "+ " + monsterTypes[i] + "\n";
 			}
@@ -278,4 +278,3 @@ bot.onText(/\/effect (.+)/, (msg, match) => {
 	});
 
 });
-
