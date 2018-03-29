@@ -18,6 +18,7 @@
   "homepage": "https://github.com/delctrl/kuribohBot#readme",
   "dependencies": {
     "dotenv": "^5.0.1",
+    "express": "^4.16.3",
     "node-telegram-bot-api": "^0.30.0",
     "request": "^2.85.0"
   }

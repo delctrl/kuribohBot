@@ -1,13 +1,16 @@
 
 const dotenv = require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
-const request = require('request')
+const request = require('request');
+const web = require('./web');
 
 console.log("TOKEN: " + process.env.TELEGRAM_TOKEN);
 
 const token = process.env.TELEGRAM_TOKEN;
 
 const bot = new TelegramBot(token, {polling: true});
+
+console.log('bot server started');
 
 bot.on('message', (msg) => {
 	const message = msg.text.toString().toLowerCase();
