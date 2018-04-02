@@ -13,9 +13,13 @@ var bot;
 if (process.env.NODE_ENV === 'production') {
 	bot = new TelegramBot(token);
 	bot.setWebHook('https://kuribohbot.herokuapp.com/');
+
+	console.log("BOT started in production mode");
 }
 else {
 	bot = new TelegramBot(token, { polling: true } );
+
+	console.log("BOT started in development mode");
 }
 
 console.log('bot server started');
@@ -330,3 +334,5 @@ bot.onText(/\/search (.+)/, (msg, match) => {
 	});
 
 });
+
+module.exports = bot;

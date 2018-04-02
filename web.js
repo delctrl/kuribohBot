@@ -17,7 +17,7 @@ const server = app.listen(process.env.PORT, function () {
 	console.log('Web server started at http://%s:%s', host, port);
 })
 
-module.exports = function(bot) {
+module.exports = function (bot) {
 	app.post('/' + bot.token, function(req, res) {
 		bot.processUpdate(req.body);
 		res.sendStatus(200);
