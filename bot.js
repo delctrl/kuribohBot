@@ -12,7 +12,7 @@ var bot;
 
 if (process.env.NODE_ENV === 'production') {
 	bot = new TelegramBot(token);
-	bot.setWebHook('https://kuribohbot.herokuapp.com/');
+	bot.setWebHook(process.env.HEROKU_URL + bot.token);
 
 	console.log("BOT started in production mode");
 }
