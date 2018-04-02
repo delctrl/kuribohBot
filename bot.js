@@ -24,47 +24,47 @@ else {
 
 console.log('bot server started');
 
-bot.on('message', (msg) => {
-	const message = msg.text.toString().toLowerCase();
+// bot.on('message', (msg) => {
+// 	const message = msg.text.toString().toLowerCase();
 
-	const pot = "pot of greed";
-	const what = "what"
-	const ask = "do"
-	if (message.includes(pot)) {
-		if (message.includes(what) && message.includes(ask)) {
+// 	const pot = "pot of greed";
+// 	const what = "what"
+// 	const ask = "do"
+// 	if (message.includes(pot)) {
+// 		if (message.includes(what) && message.includes(ask)) {
 
-			bot.sendMessage(msg.chat.id, "It allows you to draw 2 cards.",  {
-				"reply_to_message_id":msg.message_id
-			});
-			return;
-		}
-	}
+// 			bot.sendMessage(msg.chat.id, "It allows you to draw 2 cards.",  {
+// 				"reply_to_message_id":msg.message_id
+// 			});
+// 			return;
+// 		}
+// 	}
 
-	const doro = "doro";
-	const draw = "draw";
-	const monsutaC = "monsuta cado"
-	const monsutaK = "monsuta kado"
-	if ((message.includes(doro) || message.includes(draw)) && !message.includes(monsutaC) && !message.includes(monsutaK)) {
-		bot.sendMessage(msg.chat.id, "MONSUTA KADO!",  {
-			"reply_to_message_id":msg.message_id
-		});
-		return;
-	}else if (message.includes(doro) && (message.includes(monsutaC) || message.includes(monsutaK))) {
-		bot.sendMessage(msg.chat.id, "MO YAMETE! YUGI!",  {
-			"reply_to_message_id":msg.message_id
-		});
-		return;
-	}
+// 	const doro = "doro";
+// 	const draw = "draw";
+// 	const monsutaC = "monsuta cado"
+// 	const monsutaK = "monsuta kado"
+// 	if ((message.includes(doro) || message.includes(draw)) && !message.includes(monsutaC) && !message.includes(monsutaK)) {
+// 		bot.sendMessage(msg.chat.id, "MONSUTA KADO!",  {
+// 			"reply_to_message_id":msg.message_id
+// 		});
+// 		return;
+// 	}else if (message.includes(doro) && (message.includes(monsutaC) || message.includes(monsutaK))) {
+// 		bot.sendMessage(msg.chat.id, "MO YAMETE! YUGI!",  {
+// 			"reply_to_message_id":msg.message_id
+// 		});
+// 		return;
+// 	}
 
-	const synchro = "synchro"
-	if (message.includes(synchro)) {
-		bot.sendMessage(msg.chat.id, "Synchro what?",  {
-			"reply_to_message_id":msg.message_id
-		});
-		return;
-	}
+// 	const synchro = "synchro"
+// 	if (message.includes(synchro)) {
+// 		bot.sendMessage(msg.chat.id, "Synchro what?",  {
+// 			"reply_to_message_id":msg.message_id
+// 		});
+// 		return;
+// 	}
 
-});
+// });
 
 //Welcome Message
 bot.onText(/\/start/, (msg) => {
