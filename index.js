@@ -16,17 +16,17 @@ bot.use(session())
 
 //Welcome message
 bot.start((ctx) => {
-    return ctx.replyWithMarkdown('*Welcome!* \n\nI can search _YU-GI-OH!_ cards for you! \n\nSend /help for more information!')
+    ctx.replyWithMarkdown('*Welcome!* \n\nI can search _YU-GI-OH!_ cards for you! \n\nSend /help for more information!')
 })
 
 //Help Commands
 bot.help((ctx) => {
-	return ctx.replyWithMarkdown("List of Commands \n\n/start - Welcome message\nabout - Credits and Bot information\n/card {card name} - Replies with a picture of the card.\n/stats {card name} - Replies with information about the card.\n/price {card name} - Replies with the current lowest price on TCGPlayer.\n\nAll card names needs to be the exact name of the card. Some newer cards may be listed by their YGOrganization names, rather then the official ones.")
+	ctx.replyWithMarkdown("List of Commands \n\n/start - Welcome message\nabout - Credits and Bot information\n/card {card name} - Replies with a picture of the card.\n/stats {card name} - Replies with information about the card.\n/price {card name} - Replies with the current lowest price on TCGPlayer.\n\nAll card names needs to be the exact name of the card. Some newer cards may be listed by their YGOrganization names, rather then the official ones.")
 })
 
 //About the bot
 bot.command('about', (ctx) => {
-	return ctx.replyWithMarkdown("*Made by @delctrl* \n\nThe *Yu-gi-oh! API* can be found at https://db.ygoprodeck.com/api-guide/")
+	ctx.replyWithMarkdown("*Made by @delctrl* \n\nThe *Yu-gi-oh! API* can be found at https://db.ygoprodeck.com/api-guide/")
 })
 
 //Fetchs Artwork for a given card
@@ -46,7 +46,7 @@ bot.hears(/\/card (.+)/, (ctx) => {
 
 		const imgPath = body[0].card_images[0].image_url
 		console.log(imgPath)
-		return ctx.replyWithPhoto({ url: imgPath }, {
+		ctx.replyWithPhoto({ url: imgPath }, {
 			"reply_to_message_id": messageId
 		})
 	})
@@ -67,7 +67,7 @@ bot.hears(/\/price (.+)/, (ctx) => {
 			})
 		}
 
-		return ctx.reply(body[0].card_prices.tcgplayer_price, {
+		ctx.reply(body[0].card_prices.tcgplayer_price, {
 			"reply_to_message_id": messageId
 		})
 	})
@@ -91,7 +91,7 @@ bot.hears(/\/effect (.+)/, (ctx) => {
 		var text = "Name: " + body[0].name + "\n"
 		text += body[0].desc
 
-		return ctx.reply(text, {
+		ctx.reply(text, {
 			"reply_to_message_id": messageId
 		})
 	})
@@ -155,7 +155,7 @@ bot.hears(/\/stats (.+)/, (ctx) => {
 			info += "Banlist Status: " + card.banlist_info.ban_tcg + "\n"
 		}
 
-		return ctx.reply(info, {
+		ctx.reply(info, {
 			"reply_to_message_id": messageId
 		})
 	})
@@ -185,7 +185,7 @@ bot.hears(/\/artworks (.+)/, (ctx) => {
 			})
 		}
 
-		return ctx.replyWithMediaGroup(images, {
+		ctx.replyWithMediaGroup(images, {
 			"reply_to_message_id": messageId
 		})
 	})
