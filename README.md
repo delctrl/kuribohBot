@@ -42,7 +42,7 @@ node index.js
 
 * [node js](https://nodejs.org/)
 * [npm](https://www.npmjs.com/)
-* [YGOHub API](https://www.ygohub.com)
+* [Yu-gi-Oh! API](https://db.ygoprodeck.com/api-guide/)
 
 ## Author
 
@@ -56,6 +56,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-* Thank's to [hosein2398](https://github.com/hosein2398/) for it's [Telegram Bot with Node Tutorial](https://github.com/hosein2398/node-telegram-bot-api-tutorial)
-* Conner Panarella from YGO Hub for creating and maintaining the API from which this bot builds upon
+* Thanks to [hosein2398](https://github.com/hosein2398/) for it's [Telegram Bot with Node Tutorial](https://github.com/hosein2398/node-telegram-bot-api-tutorial)
+* Thanks to every contributor of [Telegraf](https://github.com/telegraf/telegraf) for this incredible framework
+* Conner Panarella from YGO Hub for creating the API from which the first version of this bot was made
+* Alan from [YGOProDeck](https://ygoprodeck.com/) for maintaining the Yu-gi-Oh! API which is the basis for the current version of this bot
 * Yu-Gi-Oh! Trading Card Game is TM and copyright Konami Holdings Corporation.

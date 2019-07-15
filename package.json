@@ -1,6 +1,6 @@
 {
   "name": "kuribohbot",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "A Telegram Bot to perform YGO related tasks",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,7 @@
   "dependencies": {
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
-    "node-telegram-bot-api": "^0.30.0",
-    "request": "^2.85.0"
+    "request": "^2.88.0",
+    "telegraf": "^3.30.1"
   }
 }
