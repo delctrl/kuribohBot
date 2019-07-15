@@ -21,7 +21,7 @@ bot.start((ctx) => {
 
 //Help Commands
 bot.help((ctx) => {
-	ctx.replyWithMarkdown("List of Commands \n\n/start - Welcome message\nabout - Credits and Bot information\n/card {card name} - Replies with a picture of the card.\n/stats {card name} - Replies with information about the card.\n/price {card name} - Replies with the current lowest price on TCGPlayer.\n\nAll card names needs to be the exact name of the card. Some newer cards may be listed by their YGOrganization names, rather then the official ones.")
+	ctx.replyWithMarkdown("List of Commands \n\n/start - Welcome message\n/about - Credits and Bot information\n/card {card name} - Replies with a picture of the card.\n/stats {card name} - Replies with information about the card.\n/price {card name} - Replies with the current lowest price on TCGPlayer.\n/artworks {card name} - Replies with all the artworks for a given card\n\nAll card names needs to be the exact name of the card. Some newer cards may be listed by their YGOrganization names, rather then the official ones.")
 })
 
 //About the bot
@@ -42,13 +42,17 @@ bot.hears(/\/card (.+)/, (ctx) => {
 	const messageId = ctx.message.message_id
 	const cardName = encodeURIComponent(ctx.match[1])
 
-	request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName, { json: true })
-	.then( function (body) {
-		ctx.replyWithPhoto({ url: body[0].card_images[0].image_url }, {
-			"reply_to_message_id": messageId
+	const task = async cardName => {
+		await request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName, { json: true })
+		.then( function (body) {
+			ctx.replyWithPhoto({ url: body[0].card_images[0].image_url }, {
+				"reply_to_message_id": messageId
+			})
 		})
-	})
-	.catch(function (err) { handleError(err, ctx, messageId) })
+		.catch(function (err) { handleError(err, ctx, messageId) })
+	}
+
+	task(cardName)
 })
 
 //Fetch lowest price on TCGPlayer
@@ -57,13 +61,17 @@ bot.hears(/\/price (.+)/, (ctx) => {
 	const messageId = ctx.message.message_id
 	const cardName = encodeURIComponent(ctx.match[1])
 
-	request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true })
-	.then( function (body) {
-		ctx.reply(body[0].card_prices.tcgplayer_price, {
-			"reply_to_message_id": messageId
+	const task = async cardName => {
+		await request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true })
+		.then( function (body) {
+			ctx.reply(body[0].card_prices.tcgplayer_price, {
+				"reply_to_message_id": messageId
+			})
 		})
-	})
-	.catch(function (err) { handleError(err, ctx, messageId) })
+		.catch(function (err) { handleError(err, ctx, messageId) })
+	}
+
+	task(cardName)
 })
 
 //Fetch card effects
@@ -72,15 +80,19 @@ bot.hears(/\/effect (.+)/, (ctx) => {
 	const messageId = ctx.message.message_id
 	const cardName = encodeURIComponent(ctx.match[1])
 
-	request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true })
-	.then( function (body) {
-		var text = "Name: " + body[0].name + "\n"
-		text += body[0].desc
-		ctx.reply(text, {
-			"reply_to_message_id": messageId
+	const task = async cardName => {
+		await request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true })
+		.then( function (body) {
+			var text = "Name: " + body[0].name + "\n"
+			text += body[0].desc
+			ctx.reply(text, {
+				"reply_to_message_id": messageId
+			})
 		})
-	})
-	.catch(function (err) { handleError(err, ctx, messageId) })
+		.catch(function (err) { handleError(err, ctx, messageId) })
+	}
+
+	task(cardName)
 })
 
 //Fetch card information
@@ -89,56 +101,60 @@ bot.hears(/\/stats (.+)/, (ctx) => {
 	const messageId = ctx.message.message_id
 	const cardName = encodeURIComponent(ctx.match[1])
 
-	request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true })
-	.then( function (body) {
-		const card = body[0]
+	const task = async cardName => {
+		await request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true })
+		.then( function (body) {
+			const card = body[0]
 
-		var info = "Name: " + card.name + "\n"
-		info += "Card Type: " + card.type + "\n"
-		info += "Subtype: " + card.race + "\n"
-		if (card.archetype) {
-			info += "Archetype: " + card.archetype + "\n"
-		}
-
-		if (card.type != cardTypes.SPELL && card.type != cardTypes.TRAP) {
-			if(card.type.includes("XYZ")) {
-				info += "Rank: " + card.level + "\n";
+			var info = "Name: " + card.name + "\n"
+			info += "Card Type: " + card.type + "\n"
+			info += "Subtype: " + card.race + "\n"
+			if (card.archetype) {
+				info += "Archetype: " + card.archetype + "\n"
 			}
-			else if (card.type.includes("Link")) {
-				const arrows = card.linkmarkers
 
-				info += "Link Rating: " + card.linkval + "\n"
-				info += "Link Markers: "
-
-				for (var i = 0; i < arrows.length; i++ ) {
-					info += arrows[i] + " | "
+			if (card.type != cardTypes.SPELL && card.type != cardTypes.TRAP) {
+				if(card.type.includes("XYZ")) {
+					info += "Rank: " + card.level + "\n";
 				}
-				info += "\n"
+				else if (card.type.includes("Link")) {
+					const arrows = card.linkmarkers
+
+					info += "Link Rating: " + card.linkval + "\n"
+					info += "Link Markers: "
+
+					for (var i = 0; i < arrows.length; i++ ) {
+						info += arrows[i] + " | "
+					}
+					info += "\n"
+				}
+				else {
+					info += "Level: " + card.level + "\n"
+				}
+
+				info += "Attribute: " + card.attribute + "\n"
+				info += "Type: " + card.race + "\n"
+				info += "Attack: " + card.atk + "\n"
+
+				if (!card.type.includes("Link")) { info += "Defense: " + card.def + "\n" }
+
+				if (card.type.includes("Pendulum")) {
+					info += "\nPendulum Scale: " + card.scale + "\n"
+				}
 			}
-			else {
-				info += "Level: " + card.level + "\n"
+
+			if (card.banlist_info && card.banlist_info.ban_tcg) {
+				info += "Banlist Status: " + card.banlist_info.ban_tcg + "\n"
 			}
 
-			info += "Attribute: " + card.attribute + "\n"
-			info += "Type: " + card.race + "\n"
-			info += "Attack: " + card.atk + "\n"
-
-			if (!card.type.includes("Link")) { info += "Defense: " + card.def + "\n" }
-
-			if (card.type.includes("Pendulum")) {
-				info += "\nPendulum Scale: " + card.scale + "\n"
-			}
-		}
-
-		if (card.banlist_info && card.banlist_info.ban_tcg) {
-			info += "Banlist Status: " + card.banlist_info.ban_tcg + "\n"
-		}
-
-		ctx.reply(info, {
-			"reply_to_message_id": messageId
+			ctx.reply(info, {
+				"reply_to_message_id": messageId
+			})
 		})
-	})
-	.catch(function (err) { handleError(err, ctx, messageId) })
+		.catch(function (err) { handleError(err, ctx, messageId) })
+	}
+
+	task(cardName)
 })
 
 //Returns every Artwork for a given card
@@ -147,22 +163,26 @@ bot.hears(/\/artworks (.+)/, (ctx) => {
 	const messageId = ctx.message.message_id
 	const cardName = encodeURIComponent(ctx.match[1])
 
-	request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true })
-	.then( function (body) {
-		var images = []
-		for(var i = 0; i < body[0].card_images.length; i++) {
-			images.push({
-				'media': { url: body[0].card_images[i].image_url },
-				'caption': body[0].card_images[i].id,
-				'type': 'photo'
-			})
-		}
+	const task = async cardName => {
+		await request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true })
+		.then( function (body) {
+			var images = []
+			for(var i = 0; i < body[0].card_images.length; i++) {
+				images.push({
+					'media': { url: body[0].card_images[i].image_url },
+					'caption': body[0].card_images[i].id,
+					'type': 'photo'
+				})
+			}
 
-		ctx.replyWithMediaGroup(images, {
-			"reply_to_message_id": messageId
+			ctx.replyWithMediaGroup(images, {
+				"reply_to_message_id": messageId
+			})
 		})
-	})
-	.catch(function (err) { handleError(err, ctx, messageId) })
+		.catch(function (err) { handleError(err, ctx, messageId) })
+	}
+
+	task(cardName)
 })
 
 //Searches for a Random Card. Currently Disabled.
