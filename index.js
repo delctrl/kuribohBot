@@ -217,10 +217,13 @@ bot.hears(/\/artworks (.+)/, (ctx) => {
 
 //Starts the bot
 if (process.env.NODE_ENV === 'production') {
+
+	// Set telegram webhook
   bot.launch( {
     webhook: {
       domain: process.env.HEROKU_URL,
-      port: 80
+			hookPath: '/bot',
+      port: process.env.PORT || 5000
     }
   })
 
