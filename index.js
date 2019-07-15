@@ -2,7 +2,7 @@ const dotenv = require('dotenv').config();
 const Telegraf = require('telegraf')
 const Extra = require('telegraf/extra')
 const session = require('telegraf/session')
-const request = require('request');
+const request = require('request-promise')
 const { reply } = Telegraf
 
 const cardTypes = {
@@ -29,171 +29,168 @@ bot.command('about', (ctx) => {
 	ctx.replyWithMarkdown("*Made by @delctrl* \n\nThe *Yu-gi-oh! API* can be found at https://db.ygoprodeck.com/api-guide/")
 })
 
+//Handle errors
+const handleError = function (err, ctx, messageId) {
+		ctx.reply("Card not found", {
+			"reply_to_message_id": messageId
+		})
+}
+
 //Fetchs Artwork for a given card
 bot.hears(/\/card (.+)/, (ctx) => {
 
 	const messageId = ctx.message.message_id
 	const cardName = encodeURIComponent(ctx.match[1])
 
-	request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true }, (err, res, body) => {
-
-		if (err) { return console.log(err) }
-		if (body.error) {
-			return ctx.reply(body.error, {
-				"reply_to_message_id": messageId
-			})
-		}
-
-		const imgPath = body[0].card_images[0].image_url
-		console.log(imgPath)
-		ctx.replyWithPhoto({ url: imgPath }, {
+	request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName, { json: true }).then( function (body) {
+		ctx.replyWithPhoto({ url: body[0].card_images[0].image_url }, {
 			"reply_to_message_id": messageId
 		})
-	})
+	}).catch(function (err) { handleError(err, ctx, messageId) })
 })
 
 //Fetch lowest price on TCGPlayer
-bot.hears(/\/price (.+)/, (ctx) => {
-
-	const messageId = ctx.message.message_id
-	const cardName = encodeURIComponent(ctx.match[1])
-
-	request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true }, (err, res, body) => {
-
-		if (err) { return console.log(err) }
-		if (body.error) {
-			return ctx.reply(body.error, {
-				"reply_to_message_id": messageId
-			})
-		}
-
-		ctx.reply(body[0].card_prices.tcgplayer_price, {
-			"reply_to_message_id": messageId
-		})
-	})
-})
-
-//Fetch card effects
-bot.hears(/\/effect (.+)/, (ctx) => {
-
-	const messageId = ctx.message.message_id
-	const cardName = encodeURIComponent(ctx.match[1])
-
-	request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true }, (err, res, body) => {
-
-		if (err) { return console.log(err) }
-		if (body.error) {
-			return ctx.reply(body.error, {
-				"reply_to_message_id": messageId
-			})
-		}
-
-		var text = "Name: " + body[0].name + "\n"
-		text += body[0].desc
-
-		ctx.reply(text, {
-			"reply_to_message_id": messageId
-		})
-	})
-})
-
-//Fetch card information
-bot.hears(/\/stats (.+)/, (ctx) => {
-
-	const messageId = ctx.message.message_id
-	const cardName = encodeURIComponent(ctx.match[1])
-
-	request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true }, (err, res, body) => {
-
-		if (err) { return console.log(err) }
-		if (body.error) {
-			return ctx.reply(body.error, {
-				"reply_to_message_id": messageId
-			})
-		}
-
-		const card = body[0]
-
-		var info = "Name: " + card.name + "\n"
-		info += "Card Type: " + card.type + "\n"
-		info += "Subtype: " + card.race + "\n"
-		if (card.archetype) {
-			info += "Archetype: " + card.archetype + "\n"
-		}
-
-		if (card.type != cardTypes.SPELL && card.type != cardTypes.TRAP) {
-			if(card.type.includes("XYZ")) {
-				info += "Rank: " + card.level + "\n";
-			}
-			else if (card.type.includes("Link")) {
-				const arrows = card.linkmarkers
-
-				info += "Link Rating: " + card.linkval + "\n"
-				info += "Link Markers: "
-
-				for (var i = 0; i < arrows.length; i++ ) {
-					info += arrows[i] + " | "
-				}
-				info += "\n"
-			}
-			else {
-				info += "Level: " + card.level + "\n"
-			}
-
-			info += "Attribute: " + card.attribute + "\n"
-			info += "Type: " + card.race + "\n"
-			info += "Attack: " + card.atk + "\n"
-
-			if (!card.type.includes("Link")) { info += "Defense: " + card.def + "\n" }
-
-			if (card.type.includes("Pendulum")) {
-				info += "\nPendulum Scale: " + card.scale + "\n"
-			}
-		}
-
-		if (card.banlist_info && card.banlist_info.ban_tcg) {
-			info += "Banlist Status: " + card.banlist_info.ban_tcg + "\n"
-		}
-
-		ctx.reply(info, {
-			"reply_to_message_id": messageId
-		})
-	})
-})
-
-//Returns every Artwork for a given card
-bot.hears(/\/artworks (.+)/, (ctx) => {
-
-	const messageId = ctx.message.message_id
-	const cardName = encodeURIComponent(ctx.match[1])
-
-	request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true }, (err, res, body) => {
-
-		if (err) { return console.log(err) }
-		if (body.error) {
-			return ctx.reply(body.error, {
-				"reply_to_message_id": messageId
-			})
-		}
-
-		var images = []
-		for(var i = 0; i < body[0].card_images.length; i++) {
-			images.push({
-				'media': { url: body[0].card_images[i].image_url },
-				'caption': body[0].card_images[i].id,
-				'type': 'photo'
-			})
-		}
-
-		ctx.replyWithMediaGroup(images, {
-			"reply_to_message_id": messageId
-		})
-	})
-})
+// bot.hears(/\/price (.+)/, (ctx) => {
+//
+// 	const messageId = ctx.message.message_id
+// 	const cardName = encodeURIComponent(ctx.match[1])
+//
+// 	await request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true }, (err, res, body) => {
+//
+// 		if (err) { return console.log(err) }
+// 		if (body.error) {
+// 			return ctx.reply(body.error, {
+// 				"reply_to_message_id": messageId
+// 			})
+// 		}
+//
+// 		ctx.reply(body[0].card_prices.tcgplayer_price, {
+// 			"reply_to_message_id": messageId
+// 		})
+// 	})
+// })
+//
+// //Fetch card effects
+// bot.hears(/\/effect (.+)/, (ctx) => {
+//
+// 	const messageId = ctx.message.message_id
+// 	const cardName = encodeURIComponent(ctx.match[1])
+//
+// 	await request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true }, (err, res, body) => {
+//
+// 		if (err) { return console.log(err) }
+// 		if (body.error) {
+// 			return ctx.reply(body.error, {
+// 				"reply_to_message_id": messageId
+// 			})
+// 		}
+//
+// 		var text = "Name: " + body[0].name + "\n"
+// 		text += body[0].desc
+//
+// 		ctx.reply(text, {
+// 			"reply_to_message_id": messageId
+// 		})
+// 	})
+// })
+//
+// //Fetch card information
+// bot.hears(/\/stats (.+)/, (ctx) => {
+//
+// 	const messageId = ctx.message.message_id
+// 	const cardName = encodeURIComponent(ctx.match[1])
+//
+// 	await request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true }, (err, res, body) => {
+//
+// 		if (err) { return console.log(err) }
+// 		if (body.error) {
+// 			return ctx.reply(body.error, {
+// 				"reply_to_message_id": messageId
+// 			})
+// 		}
+//
+// 		const card = body[0]
+//
+// 		var info = "Name: " + card.name + "\n"
+// 		info += "Card Type: " + card.type + "\n"
+// 		info += "Subtype: " + card.race + "\n"
+// 		if (card.archetype) {
+// 			info += "Archetype: " + card.archetype + "\n"
+// 		}
+//
+// 		if (card.type != cardTypes.SPELL && card.type != cardTypes.TRAP) {
+// 			if(card.type.includes("XYZ")) {
+// 				info += "Rank: " + card.level + "\n";
+// 			}
+// 			else if (card.type.includes("Link")) {
+// 				const arrows = card.linkmarkers
+//
+// 				info += "Link Rating: " + card.linkval + "\n"
+// 				info += "Link Markers: "
+//
+// 				for (var i = 0; i < arrows.length; i++ ) {
+// 					info += arrows[i] + " | "
+// 				}
+// 				info += "\n"
+// 			}
+// 			else {
+// 				info += "Level: " + card.level + "\n"
+// 			}
+//
+// 			info += "Attribute: " + card.attribute + "\n"
+// 			info += "Type: " + card.race + "\n"
+// 			info += "Attack: " + card.atk + "\n"
+//
+// 			if (!card.type.includes("Link")) { info += "Defense: " + card.def + "\n" }
+//
+// 			if (card.type.includes("Pendulum")) {
+// 				info += "\nPendulum Scale: " + card.scale + "\n"
+// 			}
+// 		}
+//
+// 		if (card.banlist_info && card.banlist_info.ban_tcg) {
+// 			info += "Banlist Status: " + card.banlist_info.ban_tcg + "\n"
+// 		}
+//
+// 		ctx.reply(info, {
+// 			"reply_to_message_id": messageId
+// 		})
+// 	})
+// })
+//
+// //Returns every Artwork for a given card
+// bot.hears(/\/artworks (.+)/, (ctx) => {
+//
+// 	const messageId = ctx.message.message_id
+// 	const cardName = encodeURIComponent(ctx.match[1])
+//
+// 	await request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true }, (err, res, body) => {
+//
+// 		if (err) { return console.log(err) }
+// 		if (body.error) {
+// 			return ctx.reply(body.error, {
+// 				"reply_to_message_id": messageId
+// 			})
+// 		}
+//
+// 		var images = []
+// 		for(var i = 0; i < body[0].card_images.length; i++) {
+// 			images.push({
+// 				'media': { url: body[0].card_images[i].image_url },
+// 				'caption': body[0].card_images[i].id,
+// 				'type': 'photo'
+// 			})
+// 		}
+//
+// 		ctx.replyWithMediaGroup(images, {
+// 			"reply_to_message_id": messageId
+// 		})
+// 	})
+// })
 
 //Searches for a Random Card. Currently Disabled.
 // bot.command("draw", (ctx) => {
-// 	request("https://db.ygoprodeck.com/api/v5/randomcard.php.", {json: true }, (err, res, body) => {
+// 	await request("https://db.ygoprodeck.com/api/v5/randomcard.php.", {json: true }, (err, res, body) => {
 // 		if (err) { return console.log(err) }
 // 		if (body.error) {
 // 			return ctx.reply(body.error, {
