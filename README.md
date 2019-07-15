@@ -42,7 +42,7 @@ node index.js
 
 * [node js](https://nodejs.org/)
 * [npm](https://www.npmjs.com/)
-* [Yu-gi-Oh! API](https://db.ygoprodeck.com/api-guide/)
+* [Yu-Gi-Oh! API](https://db.ygoprodeck.com/api-guide/)
 
 ## Author
 
