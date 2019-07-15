@@ -1,6 +1,6 @@
 {
   "name": "kuribohbot",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "A Telegram Bot to perform YGO related tasks",
   "main": "index.js",
   "scripts": {
