@@ -21,7 +21,7 @@ bot.start((ctx) => {
 
 //Help Commands
 bot.help((ctx) => {
-	ctx.replyWithMarkdown("List of Commands \n\n/start - Welcome message\n/about - Credits and Bot information\n/card {card name} - Replies with a picture of the card.\n/stats {card name} - Replies with information about the card.\n/price {card name} - Replies with the current lowest price on TCGPlayer.\n/artworks {card name} - Replies with all the artworks for a given card\n\nAll card names needs to be the exact name of the card. Some newer cards may be listed by their YGOrganization names, rather then the official ones.")
+	ctx.replyWithMarkdown("List of Commands \n\n/start - Welcome message\n/about - Credits and Bot information\n/card {card name} - Replies with a picture of the card.\n/stats {card name} - Replies with information about the card.\n/price {card name} - Replies with the current lowest price on TCGPlayer.\n/artworks {card name} - Replies with all the artworks for a given card\n/draw - Replies with a random card\n\nAll card names needs to be the exact name of the card. Some newer cards may be listed by their YGOrganization names, rather then the official ones.")
 })
 
 //About the bot
@@ -149,11 +149,12 @@ bot.hears(/\/artworks (.+)/, async (ctx) => {
 
 	return request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true })
 	.then( function (body) {
+
 		var images = []
 		for(var i = 0; i < body[0].card_images.length; i++) {
+			const path = body[0].card_images[i].image_url
 			images.push({
-				'media': { url: body[0].card_images[i].image_url },
-				'caption': body[0].card_images[i].id,
+				'media': { url: path },
 				'type': 'photo'
 			})
 		}
@@ -166,23 +167,26 @@ bot.hears(/\/artworks (.+)/, async (ctx) => {
 })
 
 //Searches for a Random Card. Currently Disabled.
-// bot.command("draw", async (ctx) => {
-// 	return request("https://db.ygoprodeck.com/api/v5/randomcard.php.", {json: true })
-// 	.then ( funcion (body) {
-// 		const card = body[0]
-// 		var caption = ""
-// 		if (card.type != cardTypes.SPELL && card.type != cardTypes.TRAP) {
-// 			caption = "MONSUTA CADO!!!"
-// 		}
-//
-// 		const imgPath = card.card_images[0].image_url
-// 		return ctx.replyWithPhoto({ url: imgPath }, {
-// 			"reply_to_message_id": messageId,
-// 			"caption": caption
-// 		})
-// 	})
-// 	.catch(function (err) { handleError(err, ctx, messageId) })
-// })
+bot.command("draw", async (ctx) => {
+
+	const messageId = ctx.message.message_id
+
+	return request("https://db.ygoprodeck.com/api/v5/randomcard.php", {json: true })
+	.then ( function (body) {
+		const card = body[0]
+		var caption = ""
+		if (card.type != cardTypes.SPELL && card.type != cardTypes.TRAP) {
+			caption = "MONSUTA CADO!!!"
+		}
+
+		const imgPath = card.card_images[0].image_url
+		return ctx.replyWithPhoto({ url: imgPath }, {
+			"reply_to_message_id": messageId,
+			"caption": caption
+		})
+	})
+	.catch(function (err) { handleError(err, ctx, messageId) })
+})
 
 //Starts the bot
 if (process.env.NODE_ENV === 'production') {
