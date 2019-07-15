@@ -52,114 +52,102 @@ bot.hears(/\/card (.+)/, async (ctx) => {
 })
 
 //Fetch lowest price on TCGPlayer
-bot.hears(/\/price (.+)/, (ctx) => {
+bot.hears(/\/price (.+)/, async (ctx) => {
 
 	const messageId = ctx.message.message_id
 	const cardName = encodeURIComponent(ctx.match[1])
 
-	const task = async cardName => {
-		request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true })
-		.then( function (body) {
-			ctx.reply(body[0].card_prices.tcgplayer_price, {
-				"reply_to_message_id": messageId
-			})
+	return request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true })
+	.then( function (body) {
+		return ctx.reply(body[0].card_prices.tcgplayer_price, {
+			"reply_to_message_id": messageId
 		})
-		.catch(function (err) { handleError(err, ctx, messageId) })
-	}
-
-	task(cardName)
+	})
+	.catch(function (err) { handleError(err, ctx, messageId) })
 })
 
 //Fetch card effects
-bot.hears(/\/effect (.+)/, (ctx) => {
+bot.hears(/\/effect (.+)/, async (ctx) => {
 
 	const messageId = ctx.message.message_id
 	const cardName = encodeURIComponent(ctx.match[1])
 
-	const task = async cardName => {
-		request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true })
-		.then( function (body) {
-			var text = "Name: " + body[0].name + "\n"
-			text += body[0].desc
-			ctx.reply(text, {
-				"reply_to_message_id": messageId
-			})
+	return request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true })
+	.then( function (body) {
+		var text = "Name: " + body[0].name + "\n"
+		text += body[0].desc
+		return ctx.reply(text, {
+			"reply_to_message_id": messageId
 		})
-		.catch(function (err) { handleError(err, ctx, messageId) })
-	}
-
-	task(cardName)
+	})
+	.catch(function (err) { handleError(err, ctx, messageId) })
 })
 
 //Fetch card information
-bot.hears(/\/stats (.+)/, (ctx) => {
+bot.hears(/\/stats (.+)/, async (ctx) => {
 
 	const messageId = ctx.message.message_id
 	const cardName = encodeURIComponent(ctx.match[1])
 
-	const task = async cardName => {
-		request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true })
-		.then( function (body) {
-			const card = body[0]
+	return request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true })
+	.then( function (body) {
+		const card = body[0]
 
-			var info = "Name: " + card.name + "\n"
-			info += "Card Type: " + card.type + "\n"
-			info += "Subtype: " + card.race + "\n"
-			if (card.archetype) {
-				info += "Archetype: " + card.archetype + "\n"
+		var info = "Name: " + card.name + "\n"
+		info += "Card Type: " + card.type + "\n"
+		info += "Subtype: " + card.race + "\n"
+		if (card.archetype) {
+			info += "Archetype: " + card.archetype + "\n"
+		}
+
+		if (card.type != cardTypes.SPELL && card.type != cardTypes.TRAP) {
+			if(card.type.includes("XYZ")) {
+				info += "Rank: " + card.level + "\n";
+			}
+			else if (card.type.includes("Link")) {
+				const arrows = card.linkmarkers
+
+				info += "Link Rating: " + card.linkval + "\n"
+				info += "Link Markers: "
+
+				for (var i = 0; i < arrows.length; i++ ) {
+					info += arrows[i] + " | "
+				}
+				info += "\n"
+			}
+			else {
+				info += "Level: " + card.level + "\n"
 			}
 
-			if (card.type != cardTypes.SPELL && card.type != cardTypes.TRAP) {
-				if(card.type.includes("XYZ")) {
-					info += "Rank: " + card.level + "\n";
-				}
-				else if (card.type.includes("Link")) {
-					const arrows = card.linkmarkers
+			info += "Attribute: " + card.attribute + "\n"
+			info += "Type: " + card.race + "\n"
+			info += "Attack: " + card.atk + "\n"
 
-					info += "Link Rating: " + card.linkval + "\n"
-					info += "Link Markers: "
+			if (!card.type.includes("Link")) { info += "Defense: " + card.def + "\n" }
 
-					for (var i = 0; i < arrows.length; i++ ) {
-						info += arrows[i] + " | "
-					}
-					info += "\n"
-				}
-				else {
-					info += "Level: " + card.level + "\n"
-				}
-
-				info += "Attribute: " + card.attribute + "\n"
-				info += "Type: " + card.race + "\n"
-				info += "Attack: " + card.atk + "\n"
-
-				if (!card.type.includes("Link")) { info += "Defense: " + card.def + "\n" }
-
-				if (card.type.includes("Pendulum")) {
-					info += "\nPendulum Scale: " + card.scale + "\n"
-				}
+			if (card.type.includes("Pendulum")) {
+				info += "\nPendulum Scale: " + card.scale + "\n"
 			}
+		}
 
-			if (card.banlist_info && card.banlist_info.ban_tcg) {
-				info += "Banlist Status: " + card.banlist_info.ban_tcg + "\n"
-			}
+		if (card.banlist_info && card.banlist_info.ban_tcg) {
+			info += "Banlist Status: " + card.banlist_info.ban_tcg + "\n"
+		}
 
-			ctx.reply(info, {
-				"reply_to_message_id": messageId
-			})
+		return ctx.reply(info, {
+			"reply_to_message_id": messageId
 		})
-		.catch(function (err) { handleError(err, ctx, messageId) })
-	}
-
-	task(cardName)
+	})
+	.catch(function (err) { handleError(err, ctx, messageId) })
 })
 
 //Returns every Artwork for a given card
-bot.hears(/\/artworks (.+)/, (ctx) => {
+bot.hears(/\/artworks (.+)/, async (ctx) => {
 
 	const messageId = ctx.message.message_id
 	const cardName = encodeURIComponent(ctx.match[1])
 
-	request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true })
+	return request('https://db.ygoprodeck.com/api/v5/cardinfo.php?name=' + cardName,  {json: true })
 	.then( function (body) {
 		var images = []
 		for(var i = 0; i < body[0].card_images.length; i++) {
@@ -170,7 +158,7 @@ bot.hears(/\/artworks (.+)/, (ctx) => {
 			})
 		}
 
-		ctx.replyWithMediaGroup(images, {
+		return ctx.replyWithMediaGroup(images, {
 			"reply_to_message_id": messageId
 		})
 	})
@@ -178,8 +166,8 @@ bot.hears(/\/artworks (.+)/, (ctx) => {
 })
 
 //Searches for a Random Card. Currently Disabled.
-// bot.command("draw", (ctx) => {
-// 	request("https://db.ygoprodeck.com/api/v5/randomcard.php.", {json: true })
+// bot.command("draw", async (ctx) => {
+// 	return request("https://db.ygoprodeck.com/api/v5/randomcard.php.", {json: true })
 // 	.then ( funcion (body) {
 // 		const card = body[0]
 // 		var caption = ""
